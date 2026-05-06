@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<PersonaModel> personas = [];
+  List<UniversidadModel> instituciones = [];
 
   void _eliminarMatriculaEspecifica(
     UniversidadModel universidadModel,
@@ -49,7 +50,44 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<Widget> listarElementos(List<MatriculaModel> matriculas) {
+  void _eliminarMatriculas(UniversidadModel universidadModel) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Limpiar todas las matrículas"),
+          content: Text(
+            "Estás seguro de eliminar todas las matrículas de ${universidadModel.nombre}?",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Cancelar"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                universidadModel.matriculas.clear();
+                Navigator.pop(context);
+                setState(() {});
+              },
+              child: Text("Sí, eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<Widget> listarElementos(
+    UniversidadModel universidadModel,
+    List<MatriculaModel> matriculas,
+  ) {
     return matriculas.map((matricula) {
       return ListTile(
         title: Text(
@@ -60,7 +98,7 @@ class _HomePageState extends State<HomePage> {
         ),
         trailing: IconButton(
           onPressed: () {
-            _eliminarMatriculaEspecifica(tecsup, matricula);
+            _eliminarMatriculaEspecifica(universidadModel, matricula);
             // matriculas.remove(matricula);
             // setState(() {});
           },
@@ -102,10 +140,10 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(tecsup.nombre),
+        Text(institucion.nombre),
         IconButton(
           onPressed: () {
-            tecsup.matriculas.add(
+            institucion.matriculas.add(
               MatriculaModel(
                 fecha: "30/04/26",
                 hora: "20:15",
@@ -119,8 +157,7 @@ class _HomePageState extends State<HomePage> {
         ),
         IconButton(
           onPressed: () {
-            institucion.matriculas.clear();
-            setState(() {});
+            _eliminarMatriculas(institucion);
           },
           icon: Icon(Icons.cleaning_services, color: Colors.red),
         ),
@@ -131,12 +168,42 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Matrículas App"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              instituciones.add(
+                UniversidadModel(
+                  nombre: "HARVARD",
+                  ruc: "29497249327",
+                  direccion: "Lima",
+                  telefono: "9939474728",
+                  matriculas: [],
+                ),
+              );
+              setState(() {});
+            },
+            icon: Icon(Icons.add_business_outlined),
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildCabeceraInstitucion(tecsup),
-            ...listarElementos(tecsup.matriculas),
+            ...instituciones.map((e) {
+              return Column(
+                children: [
+                  _buildCabeceraInstitucion(e),
+                  ...listarElementos(e, e.matriculas),
+                ],
+              );
+            }),
+            // Divider(),
+
+            // _buildCabeceraInstitucion(tecsup),
+            // ...listarElementos(tecsup.matriculas),
           ],
         ),
       ),
