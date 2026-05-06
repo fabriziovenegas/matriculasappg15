@@ -12,6 +12,43 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<PersonaModel> personas = [];
 
+  void _eliminarMatriculaEspecifica(
+    UniversidadModel universidadModel,
+    MatriculaModel matriculaModel,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Confirmar eliminación"),
+          content: Text(
+            "Estás seguro de eliminar la matricula de ${matriculaModel.estudiante.nombre} ${matriculaModel.estudiante.apellido} de ${matriculaModel.carrera.nombre}",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Cancelar"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                universidadModel.matriculas.remove(matriculaModel);
+                Navigator.pop(context);
+                setState(() {});
+              },
+              child: Text("Sí, eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   List<Widget> listarElementos(List<MatriculaModel> matriculas) {
     return matriculas.map((matricula) {
       return ListTile(
@@ -23,8 +60,9 @@ class _HomePageState extends State<HomePage> {
         ),
         trailing: IconButton(
           onPressed: () {
-            matriculas.remove(matricula);
-            setState(() {});
+            _eliminarMatriculaEspecifica(tecsup, matricula);
+            // matriculas.remove(matricula);
+            // setState(() {});
           },
           icon: Icon(Icons.delete, color: Colors.red),
         ),
