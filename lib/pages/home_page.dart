@@ -17,14 +17,36 @@ class _HomePageState extends State<HomePage> {
   void _eliminarMatriculaEspecifica(
     UniversidadModel universidadModel,
     MatriculaModel matriculaModel,
-  ) {
+  ) {}
+
+  void editarMatricula(MatriculaModel matricula) {
+    TextEditingController carreraController = TextEditingController(
+      text: matricula.carrera.nombre,
+    );
+
+    TextEditingController nombreController = TextEditingController(
+      text: matricula.estudiante.nombre,
+    );
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Confirmar eliminación"),
-          content: Text(
-            "Estás seguro de eliminar la matricula de ${matriculaModel.estudiante.nombre} ${matriculaModel.estudiante.apellido} de ${matriculaModel.carrera.nombre}",
+          title: Text("Editar matrícula"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: carreraController,
+                decoration: InputDecoration(labelText: "Carrera"),
+              ),
+              SizedBox(height: 12),
+
+              TextField(
+                controller: nombreController,
+                decoration: InputDecoration(labelText: "Nombre y apellido"),
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -33,17 +55,18 @@ class _HomePageState extends State<HomePage> {
               },
               child: Text("Cancelar"),
             ),
+
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
               onPressed: () {
-                universidadModel.matriculas.remove(matriculaModel);
-                Navigator.pop(context);
+                matricula.carrera.nombre = carreraController.text;
+
+                matricula.estudiante.nombre = nombreController.text;
+
                 setState(() {});
+
+                Navigator.pop(context);
               },
-              child: Text("Sí, eliminar"),
+              child: Text("Guardar"),
             ),
           ],
         );
@@ -94,16 +117,24 @@ class _HomePageState extends State<HomePage> {
         title: Text(
           "${matricula.carrera.nombre} - ${matricula.carrera.duracion}",
         ),
-        subtitle: Text(
-          "${matricula.estudiante.nombre} ${matricula.estudiante.apellido}",
-        ),
-        trailing: IconButton(
-          onPressed: () {
-            _eliminarMatriculaEspecifica(universidadModel, matricula);
-            // matriculas.remove(matricula);
-            // setState(() {});
-          },
-          icon: Icon(Icons.delete, color: Colors.red),
+        subtitle: Text(matricula.estudiante.nombre),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () {
+                editarMatricula(matricula);
+              },
+              icon: Icon(Icons.edit, color: Colors.blue),
+            ),
+
+            IconButton(
+              onPressed: () {
+                _eliminarMatriculaEspecifica(universidadModel, matricula);
+              },
+              icon: Icon(Icons.delete, color: Colors.red),
+            ),
+          ],
         ),
       );
     }).toList();
@@ -193,7 +224,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               instituciones.add(
                 UniversidadModel(
-                  nombre: "HARVARD",
+                  nombre: "TECSUP",
                   ruc: "29497249327",
                   direccion: "Lima",
                   telefono: "9939474728",
