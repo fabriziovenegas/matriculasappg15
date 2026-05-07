@@ -12,6 +12,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<PersonaModel> personas = [];
   List<UniversidadModel> instituciones = [];
+  int? expandedIndex;
 
   void _eliminarMatriculaEspecifica(
     UniversidadModel universidadModel,
@@ -165,6 +166,23 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildExpansionInstitucion(
+    int index,
+    UniversidadModel universidadModel,
+  ) {
+    return ExpansionTile(
+      key: ValueKey("ExpansionTile_$index${expandedIndex == index}"),
+      initiallyExpanded: expandedIndex == index,
+      tilePadding: EdgeInsets.symmetric(horizontal: 32),
+      childrenPadding: EdgeInsets.symmetric(horizontal: 24),
+      title: _buildCabeceraInstitucion(universidadModel),
+      children: listarElementos(universidadModel, universidadModel.matriculas),
+      onExpansionChanged: (bool isOpen) {
+        expandedIndex = isOpen ? index : null;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,14 +210,12 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ...instituciones.map((e) {
-              return Column(
-                children: [
-                  _buildCabeceraInstitucion(e),
-                  ...listarElementos(e, e.matriculas),
-                ],
-              );
-            }),
+            for (int i = 0; i < instituciones.length; i++)
+              _buildExpansionInstitucion(i, instituciones[i]),
+            // ...instituciones.map((e) {
+            //   return _buildExpansionInstitucion(e);
+
+            // }),
             // Divider(),
 
             // _buildCabeceraInstitucion(tecsup),
