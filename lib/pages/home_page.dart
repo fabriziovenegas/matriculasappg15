@@ -17,7 +17,36 @@ class _HomePageState extends State<HomePage> {
   void _eliminarMatriculaEspecifica(
     UniversidadModel universidadModel,
     MatriculaModel matriculaModel,
-  ) {}
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("¿Estás seguro que quieres eliminar esta matrícula?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Cancelar"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                universidadModel.matriculas.remove(matriculaModel);
+                setState(() {});
+                Navigator.pop(context);
+              },
+              child: Text("Eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void editarMatricula(MatriculaModel matricula) {
     TextEditingController carreraController = TextEditingController(
@@ -222,16 +251,79 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              instituciones.add(
-                UniversidadModel(
-                  nombre: "TECSUP",
-                  ruc: "29497249327",
-                  direccion: "Lima",
-                  telefono: "9939474728",
-                  matriculas: [],
-                ),
+              TextEditingController universidadController =
+                  TextEditingController();
+              TextEditingController direccionController =
+                  TextEditingController();
+              TextEditingController telefonoController =
+                  TextEditingController();
+              TextEditingController rucController = TextEditingController();
+
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("Universidad"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: universidadController,
+                          decoration: InputDecoration(
+                            labelText: "Introduce la universidad",
+                          ),
+                        ),
+                        SizedBox(height: 12),
+
+                        TextField(
+                          controller: direccionController,
+                          decoration: InputDecoration(
+                            labelText: "Introduce la dirección",
+                          ),
+                        ),
+                        SizedBox(height: 12),
+
+                        TextField(
+                          controller: telefonoController,
+                          decoration: InputDecoration(
+                            labelText: "Introduce el teléfono",
+                          ),
+                        ),
+                        TextField(
+                          controller: rucController,
+                          decoration: InputDecoration(
+                            labelText: "Introduce el RUC",
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("Cancelar"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          instituciones.add(
+                            UniversidadModel(
+                              nombre: universidadController.text,
+                              ruc: rucController.text,
+                              direccion: direccionController.text,
+                              telefono: telefonoController.text,
+                              matriculas: [],
+                            ),
+                          );
+                          setState(() {});
+                          Navigator.pop(context);
+                        },
+                        child: Text("Guardar"),
+                      ),
+                    ],
+                  );
+                },
               );
-              setState(() {});
             },
             icon: Icon(Icons.add_business_outlined),
           ),
